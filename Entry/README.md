@@ -2,7 +2,7 @@
 
 ## 谜面
 
-![entry.png](entry.png)
+![entry.svg](entry.svg)
 
 ## 答案
 
