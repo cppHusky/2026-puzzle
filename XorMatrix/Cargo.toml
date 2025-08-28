@@ -1,0 +1,9 @@
+[package]
+name="XorMatrix"
+version="0.1.0"
+edition="2024"
+[[bin]]
+name="sim"
+path="sim.rs"
+[dependencies]
+rand="0.9.2"
