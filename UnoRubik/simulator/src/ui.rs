@@ -89,9 +89,9 @@ fn observe_movement(
             message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
         }
         else if *mov==movement::_U.into()||*mov==movement::_D.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
+            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
+            message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
+            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
         }
         else if *mov==movement::_L.into()||*mov==movement::_R.into(){
             message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
