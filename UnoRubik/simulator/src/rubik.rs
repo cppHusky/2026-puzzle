@@ -1,10 +1,10 @@
 use bevy::prelude::*;
-use crate::{facelet,movement};
+use crate::{facelet,turn};
 #[derive(Debug,Clone,Component)]
 pub struct RubikFace(pub facelet::Facelet);
 #[derive(Debug,Clone,Component)]
 pub struct RubikFaceText(pub facelet::Facelet);
-///This struct represents that after a series of movements, the facelet `value` stands at place
+///This struct represents that after a series of turns, the facelet `value` stands at place
 ///`key`
 #[derive(Debug,Default,Clone,PartialEq,Eq,Resource)]
 pub struct Rubik(pub std::collections::HashMap<facelet::Facelet,facelet::Facelet>);
@@ -27,14 +27,14 @@ impl std::ops::Index<&facelet::Facelet> for Rubik{
         &self.0[id]
     }
 }
-impl<T:Into<movement::Movement>> std::ops::Mul<T> for Rubik{
+impl<T:Into<turn::Turn>> std::ops::Mul<T> for Rubik{
     type Output=Self;
     fn mul(self,mov:T)->Self::Output{
         let mov=mov.into();
         Self::from_hashmap(self.0.iter().map(|(k,v)|(mov[k].clone(),v.clone())).collect())
     }
 }
-impl<T:Into<movement::Movement>> std::ops::MulAssign<T> for Rubik{
+impl<T:Into<turn::Turn>> std::ops::MulAssign<T> for Rubik{
     fn mul_assign(&mut self,mov:T){
         *self=std::mem::take(self)*mov;
     }
@@ -61,7 +61,7 @@ mod test{
             ])
         }();
         let reality=||->Rubik{
-            use movement::{U,u,D,d,F,f,B,b,L,l,R,r};
+            use turn::{U,u,D,d,F,f,B,b,L,l,R,r};
             Rubik::new()
                 *F*R*B*L*U*l*U*b*r*f*l*u*L*u
                 *B*L*F*R*U*r*U*f*l*b*r*u*R*u

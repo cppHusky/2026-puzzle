@@ -1,6 +1,6 @@
 mod config;
 mod facelet;
-mod movement;
+mod turn;
 mod rubik;
 mod ui;
 use bevy::prelude::*;
@@ -11,6 +11,7 @@ fn main(){
         .add_plugins(DefaultPlugins)
         .add_plugins(MeshPickingPlugin)
         .insert_resource(rubik::Rubik::new())
+        .insert_resource(Player(Vec3::new(0.,0.,0.)))
         .add_message::<ui::FaceletRefreshMessage>()
         .add_systems(Startup,(
             setup_camera,
