@@ -4,8 +4,9 @@ use crate::{facelet,turn};
 pub struct RubikFace(pub facelet::Facelet);
 #[derive(Debug,Clone,Component)]
 pub struct RubikFaceText(pub facelet::Facelet);
-///This struct represents that after a series of turns, the facelet `value` stands at place
-///`key`
+///This struct is a map from actual facelets to logical facelets.
+///The actual facelets are what you see on the cube, while the logical facelets are what the
+///facelets are supposed to be in the solved state.
 #[derive(Debug,Default,Clone,PartialEq,Eq,Resource)]
 pub struct Rubik(pub std::collections::HashMap<facelet::Facelet,facelet::Facelet>);
 impl Rubik{
