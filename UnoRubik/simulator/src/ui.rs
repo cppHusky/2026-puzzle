@@ -1,3 +1,4 @@
+use crate::config;
 use crate::facelet;
 use crate::movement;
 use crate::rubik;
@@ -5,16 +6,21 @@ use crate::turn;
 use bevy::prelude::*;
 #[derive(Debug,Clone,Component)]
 struct TurnButton(turn::Turn);
-#[derive(Debug,Clone)]
-enum Movement{Up,Down,Left,Right}
+#[derive(Debug,Clone,PartialEq,Eq)]
+pub enum Movement{Up,Down,Left,Right}
 #[derive(Debug,Clone,Component)]
 struct MoveButton(Movement);
+#[derive(Debug,Clone,Component)]
+pub struct MoveButtonInternal(pub Movement);
 #[derive(Debug,Clone,Message)]
 pub struct FaceletRefreshMessage(pub facelet::Facelet);
+#[derive(Debug,Clone,Message)]
+pub struct MovementRefreshMessage;
 pub fn setup_ui(
     mut commands:Commands,
     mut meshes:ResMut<Assets<Mesh>>,
     mut materials:ResMut<Assets<ColorMaterial>>,
+    mut material_cache:ResMut<config::MaterialCache>,
 ){
     let mut spawn_ui_turn=|turn:turn::Turn,transform:Transform|{
         let arrow=Mesh::new(
@@ -37,7 +43,7 @@ pub fn setup_ui(
         commands.spawn((
             TurnButton(turn),
             Mesh2d(meshes.add(arrow)),
-            MeshMaterial2d(materials.add(Color::WHITE)),
+            MeshMaterial2d(material_cache.get(config::GameColor::White,&mut materials)),
             transform,
         )).observe(observe_turn);
     };
@@ -69,12 +75,13 @@ pub fn setup_ui(
             ],
         );
         commands.spawn((
-            MoveButton(movement),
+            MoveButton(movement.clone()),
             Mesh2d(meshes.add(Rectangle::new(30.,30.))),
             transform,
             children![(
+                MoveButtonInternal(movement),
                 Mesh2d(meshes.add(arrow)),
-                MeshMaterial2d(materials.add(Color::from(Srgba::rgb(0.9,0.9,0.9)))),
+                MeshMaterial2d(material_cache.get(config::GameColor::White,&mut materials)),
                 Transform::from_translation(Vec3::ZERO),
             ),(
                 Mesh2d(meshes.add(Polyline2d::new(vec![
@@ -84,7 +91,7 @@ pub fn setup_ui(
                     Vec2::new(-15.,15.),
                     Vec2::new(-15.,-15.),
                 ]))),
-                MeshMaterial2d(materials.add(Color::from(Srgba::rgb(0.3,0.3,0.3)))),
+                MeshMaterial2d(material_cache.get(config::GameColor::DarkGrey,&mut materials)),
                 Transform::from_xyz(0.,0.,-1.),
             )],
         )).observe(observe_move);
@@ -98,63 +105,65 @@ fn observe_turn(
     trigger:On<Pointer<Click>>,
     buttons_query:Query<&TurnButton>,
     mut rubik:ResMut<rubik::Rubik>,
-    mut message_writer:MessageWriter<FaceletRefreshMessage>,
+    mut facelet_message_writer:MessageWriter<FaceletRefreshMessage>,
+    mut movement_message_writer:MessageWriter<MovementRefreshMessage>,
     mut player:ResMut<movement::Player>,
 ){
     if let Ok(TurnButton(turn))=buttons_query.get(trigger.entity){
         *rubik*=turn.clone();
         player.0=turn[&player.0].clone();
         if *turn==turn::U.into()||*turn==turn::u.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
         }
         else if *turn==turn::D.into()||*turn==turn::d.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdl));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdr));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdl));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdr));
         }
         else if *turn==turn::F.into()||*turn==turn::f.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdl));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdr));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdl));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdr));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
         }
         else if *turn==turn::L.into()||*turn==turn::l.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdl));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdl));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Ful));
         }
         else if *turn==turn::R.into()||*turn==turn::r.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdr));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fdr));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fur));
         }
         else if *turn==turn::_U.into()||*turn==turn::_D.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fr));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fl));
         }
         else if *turn==turn::_L.into()||*turn==turn::_R.into(){
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
-            message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fd));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::F));
+            facelet_message_writer.write(FaceletRefreshMessage(facelet::Facelet::Fu));
         }
+        movement_message_writer.write(MovementRefreshMessage);
     }
 }
 fn observe_move(
     trigger:On<Pointer<Click>>,
     buttons_query:Query<&MoveButton>,
-    mut rubik:ResMut<rubik::Rubik>,
+    rubik:ResMut<rubik::Rubik>,
     mut player:ResMut<movement::Player>,
+    mut message_writer:MessageWriter<MovementRefreshMessage>,
 ){
     if let Ok(MoveButton(movement))=buttons_query.get(trigger.entity){
-        eprintln!("Move {:?}",movement);
         let new_facelet=match movement{
             Movement::Up=>movement::move_up(&player.0),
             Movement::Down=>movement::move_down(&player.0),
@@ -166,5 +175,6 @@ fn observe_move(
                 player.0=new_facelet;
             }
         }
+        message_writer.write(MovementRefreshMessage);
     }
 }

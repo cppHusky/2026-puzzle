@@ -1,14 +1,55 @@
 use bevy::prelude::*;
 use crate::facelet;
-pub fn face_color(facelet:&facelet::Facelet)->Color{
+#[derive(Debug,Clone,Hash,PartialEq,Eq)]
+pub enum GameColor{
+    Black,
+    DarkGrey,
+    White,
+    Yellow,
+    Red,
+    Orange,
+    Green,
+    Blue,
+}
+impl GameColor{
+    pub fn to_bevy_color(self)->Color{
+        match self{
+            Self::Black=>Color::from(bevy::color::palettes::css::BLACK),
+            Self::DarkGrey=>Color::from(Srgba::rgb(0.3,0.3,0.3)),
+            Self::White=>Color::from(bevy::color::palettes::css::WHITE),
+            Self::Yellow=>Color::from(bevy::color::palettes::css::YELLOW),
+            Self::Red=>Color::from(bevy::color::palettes::css::RED),
+            Self::Orange=>Color::from(bevy::color::palettes::css::ORANGE),
+            Self::Green=>Color::from(bevy::color::palettes::css::GREEN),
+            Self::Blue=>Color::from(bevy::color::palettes::css::BLUE),
+        }
+    }
+}
+#[derive(Resource)]
+pub struct MaterialCache(std::collections::HashMap<GameColor,Handle<ColorMaterial>>);
+impl MaterialCache{
+    pub fn new()->Self{
+        Self(std::collections::HashMap::new())
+    }
+    pub fn get(
+        &mut self,
+        color:GameColor,
+        materials:&mut ResMut<Assets<ColorMaterial>>,
+    )->Handle<ColorMaterial>{
+        self.0.entry(color.clone())
+            .or_insert_with(||materials.add(ColorMaterial::from(color.to_bevy_color())))
+            .clone()
+    }
+}
+pub fn face_color(facelet:&facelet::Facelet)->GameColor{
     use facelet::Facelet::*;
     match facelet{
-        Ufl|Uf|Ufr|Ul|U|Ur|Ubl|Ub|Ubr=>Color::Srgba(bevy::color::palettes::css::WHITE),
-        Dbl|Db|Dbr|Dl|D|Dr|Dfl|Df|Dfr=>Color::Srgba(bevy::color::palettes::css::YELLOW),
-        Fdl|Fd|Fdr|Fl|F|Fr|Ful|Fu|Fur=>Color::Srgba(bevy::color::palettes::css::RED),
-        Bdr|Bd|Bdl|Br|B|Bl|Bur|Bu|Bul=>Color::Srgba(bevy::color::palettes::css::ORANGE),
-        Ldb|Ld|Ldf|Lb|L|Lf|Lub|Lu|Luf=>Color::Srgba(bevy::color::palettes::css::GREEN),
-        Rdf|Rd|Rdb|Rf|R|Rb|Ruf|Ru|Rub=>Color::Srgba(bevy::color::palettes::css::BLUE),
+        Ufl|Uf|Ufr|Ul|U|Ur|Ubl|Ub|Ubr=>GameColor::White,
+        Dbl|Db|Dbr|Dl|D|Dr|Dfl|Df|Dfr=>GameColor::Yellow,
+        Fdl|Fd|Fdr|Fl|F|Fr|Ful|Fu|Fur=>GameColor::Red,
+        Bdr|Bd|Bdl|Br|B|Bl|Bur|Bu|Bul=>GameColor::Orange,
+        Ldb|Ld|Ldf|Lb|L|Lf|Lub|Lu|Luf=>GameColor::Green,
+        Rdf|Rd|Rdb|Rf|R|Rb|Ruf|Ru|Rub=>GameColor::Blue,
     }
 }
 pub fn face_number(facelet:&facelet::Facelet)->u8{

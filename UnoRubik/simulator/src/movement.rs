@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use crate::config;
 use crate::facelet;
 use crate::rubik;
-use crate::turn;
 ///It tells the actual place of the Player
 #[derive(Debug,Resource)]
 pub struct Player(pub facelet::Facelet);
