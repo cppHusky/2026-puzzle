@@ -77,7 +77,7 @@ mod tests{
     use super::*;
     #[test]
     fn test_moveable(){
-        use turn::*;
+        use crate::turn::*;
         let mut rubik=rubik::Rubik::new()*L*d*l*f*d*F*U*f*D*F*L*D*l*u;
         assert!(!moveable(&rubik,&facelet::Facelet::Ful,&facelet::Facelet::Fu));
         assert!(!moveable(&rubik,&facelet::Facelet::Fur,&facelet::Facelet::Fu));
