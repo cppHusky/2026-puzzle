@@ -1,0 +1,15 @@
+[package]
+name="color-blending"
+default-run="pentasimulator"
+edition="2024"
+[[bin]]
+name="simulator"
+path="./simulator.rs"
+[[bin]]
+name="pentasimulator"
+path="./pentasimulator.rs"
+[[bin]]
+name="solve"
+path="./solve.rs"
+[dependencies]
+rand="0.9.2"
