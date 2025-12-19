@@ -9,27 +9,31 @@ pub fn pentagen()->[rgb::Rgb;5]{
         rand::random_range(MIN_PIGMENT..=MAX_PIGMENT),
         rand::random_range(MIN_PIGMENT..=MAX_PIGMENT),
     );
+    let min_color=standard_color.0.min(standard_color.1).min(standard_color.2);
+    let max_color=standard_color.0.max(standard_color.1).max(standard_color.2);
+    let min_bound=min_color.min(0xff-max_color);
+    let max_bound=0xff-min_bound;
     let mut rng=rand::rng();
     let mut reference_color=[
         (
-            rand::random_range(0..standard_color.0),
-            rand::random_range(standard_color.1+1..=255),
-            rand::random_range(standard_color.2+1..=255),
+            rand::random_range(0..min_bound),
+            rand::random_range(max_bound..=0xff),
+            rand::random_range(max_bound..=0xff),
         ),
         (
-            rand::random_range(standard_color.0+1..=255),
-            rand::random_range(0..standard_color.1),
-            rand::random_range(standard_color.2+1..=255),
+            rand::random_range(max_bound..=0xff),
+            rand::random_range(0..min_bound),
+            rand::random_range(max_bound..=0xff),
         ),
         (
-            rand::random_range(standard_color.0+1..=255),
-            rand::random_range(standard_color.1+1..=255),
-            rand::random_range(0..standard_color.2),
+            rand::random_range(max_bound..=0xff),
+            rand::random_range(max_bound..=0xff),
+            rand::random_range(0..min_bound),
         ),
         (
-            rand::random_range(0..standard_color.0),
-            rand::random_range(0..standard_color.1),
-            rand::random_range(0..standard_color.2),
+            rand::random_range(0..min_bound),
+            rand::random_range(0..min_bound),
+            rand::random_range(0..min_bound),
         ),
     ];
     reference_color.shuffle(&mut rng);
