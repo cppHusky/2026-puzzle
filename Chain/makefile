@@ -1,8 +1,8 @@
-default:entry.svg
-entry.svg:entry.typ
+default:chain.svg
+chain.svg:chain.typ
 	typst c $^ -f svg $@
 solve:solve.cpp
 	g++ $^ -o $@ -std=c++20
-all:entry.svg solve
+all:chain.svg solve
 clean:
-	rm -f entry.svg solve
+	rm -f chain.svg solve
