@@ -2,7 +2,7 @@
 
 ## 谜面
 
-![entry.svg](entry.svg)
+![chain.svg](chain.svg)
 
 ## 答案
 
