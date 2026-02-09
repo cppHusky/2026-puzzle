@@ -6,7 +6,7 @@
 
 ## 答案
 
-`/^\s*noisy\s*shadows\s*in\*the\*horizon\s*$/i`
+`/^\s*noisy\s*shadows\s*in\s*the\s*horizon\s*$/i`
 
 ## 题解
 
