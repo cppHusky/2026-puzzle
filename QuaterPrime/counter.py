@@ -17,6 +17,16 @@ def is_prime(num):
     return True
 
 
+def find_prev_primes(from_num, count):
+    primes = []
+    num = from_num - 1
+    while len(primes) < count and num > 1:
+        if is_prime(num):
+            primes.insert(0, num)
+        num -= 1
+    return primes
+
+
 def find_next_primes(from_num, count):
     primes = []
     num = from_num + 1
@@ -37,13 +47,20 @@ def format_time(seconds):
 def main():
     while True:
         now = int(time.time())
+        prev_primes = find_prev_primes(now, 5)
         next_primes = find_next_primes(now, 5)
 
         os.system('cls' if os.name == 'nt' else 'clear')
         print(f"Current UNIX timestamp: {now}")
+        
+        print("\nPast 5 Prime UNIX Timestamps:")
+        print("─" * 40)
+        for i, prime in enumerate(prev_primes):
+            seconds_ago = now - prime
+            print(f"Prime {i + 1}: {prime} ({seconds_ago} seconds ago)")
+        
         print("\nNext 5 Prime UNIX Timestamps:")
         print("─" * 40)
-
         for i, prime in enumerate(next_primes):
             seconds_until = prime - now
             print(f"Prime {i + 1}: {prime} (in {seconds_until} seconds)")
