@@ -70,7 +70,7 @@
 </template>
 <script setup>
 import {computed,onMounted,onUnmounted,ref} from "vue";
-const checkpointSeconds=[10,15,20,25,30,35,35,40];//checkpointSeconds[6]===checkpointSeconds[5]
+const checkpointSeconds=[5*60,9*60,12*60,14*60,16*60,18*60,18*60,20*60];//checkpointSeconds[6]===checkpointSeconds[5]
 const tokenCipherA=[89,69,107,74,124,33,91,126];
 const tokenCipherB=[111,113,83,126,69,22,111,77];
 const startedAt=ref(Date.now());
